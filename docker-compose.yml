@@ -1,0 +1,20 @@
+version: '3'
+services:
+  web:
+    build: .
+    restart: on-failure
+    ports:
+      - "9000:9000"
+    environment:
+      PORT: 9000
+      MYSQL_DSN: "root:123@(mysql:3306)/messenger"
+  mysql:
+    image: "mysql:5.7"
+    restart: on-failure
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123"
+      MYSQL_DATABASE: messenger
+    volumes:
+      - "./schema.sql:/docker-entrypoint-initdb.d/schema.sql"
