@@ -7,6 +7,7 @@ import (
 	"log"
 	"messenger/db"
 	"messenger/handlers"
+	mw "messenger/middlewares"
 	"messenger/service"
 	"net/http"
 	"os"
@@ -46,15 +47,15 @@ func main() {
 	chatSrv := service.NewChatService(chatDB, userDB)
 	messageSrv := service.NewMessageService(db.NewMessage(sqlDB), chatDB)
 
-	http.Handle("/users/add", handlers.NewAddingUser(userSrv))
+	http.Handle("/users/add", mw.AllowPost(handlers.NewAddingUser(userSrv)))
 
-	http.Handle("/chats/add", handlers.NewAddingChat(chatSrv))
+	http.Handle("/chats/add", mw.AllowPost(handlers.NewAddingChat(chatSrv)))
 
-	http.Handle("/chats/get", handlers.NewGettingUserChats(chatSrv))
+	http.Handle("/chats/get", mw.AllowPost(handlers.NewGettingUserChats(chatSrv)))
 
-	http.Handle("/messages/add", handlers.NewAddingMessage(messageSrv))
+	http.Handle("/messages/add", mw.AllowPost(handlers.NewAddingMessage(messageSrv)))
 
-	http.Handle("/messages/get", handlers.NewGettingChatMessages(messageSrv))
+	http.Handle("/messages/get", mw.AllowPost(handlers.NewGettingChatMessages(messageSrv)))
 
 	log.Printf("starting listen on port: %s", port)
 	fmt.Println(http.ListenAndServe(":"+port, nil))
